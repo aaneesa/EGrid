@@ -1,0 +1,16 @@
+# Secrets and API Keys
+.env
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Data and DBs (Recommended for large datasets or local DBs)
+src/vectordb/chroma_db/
+
+# OS specific
+.DS_Store
