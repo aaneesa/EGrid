@@ -1,8 +1,12 @@
 langgraph
-langchain-groq   
+langchain-groq
+langchain-core
 pandas
 numpy
 scikit-learn
+xgboost
 chromadb
 streamlit
 python-dotenv
+plotly
+joblib

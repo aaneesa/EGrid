@@ -11,6 +11,7 @@ env/
 
 # Data and DBs (Recommended for large datasets or local DBs)
 src/vectordb/chroma_db/
+src/vectordb/chroma_store/
 
 # OS specific
 .DS_Store
