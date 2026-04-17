@@ -18,7 +18,7 @@ def build_egrid_knowledge_base():
 
     loader = DirectoryLoader(docs_dir, glob="./*.md", loader_cls=TextLoader)
     documents = loader.load()
-    print(f"📄 Loaded {len(documents)} core policy documents.")
+    print(f"Loaded {len(documents)} core policy documents.")
 
     # 3. Smart Chunking
     # We use 700 chars to keep tables and Protocol IDs together

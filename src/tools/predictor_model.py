@@ -10,7 +10,6 @@ import os
 def train_demand_model():
     df = pd.read_csv('data/processed/processed_data.csv')
 
-    # 1. No log transformation needed for XGBoost
     y = df['Load_Score']
 
     # 2. FEATURE ENGINEERING (Simplifying for a small dataset)
@@ -55,7 +54,6 @@ def train_demand_model():
     print(f"Mean Absolute Error: {mae:.2f}")
     print(f"R2 Score: {r2:.4f}")
 
-    # Save
     os.makedirs('src/models', exist_ok=True)
     joblib.dump(model, 'src/models/demand_predictor.pkl')
     print("✅ Optimized XGBoost Model saved.")
