@@ -1,17 +1,19 @@
-from typing import TypedDict, Annotated, List
+from typing import TypedDict, List, Annotated
 import operator
 
 class AgentState(TypedDict):
-    # Input from the user/telemetry
-    station_id: str
+    # Input Keys 
+    task: str
     city: str
+    temp: int
     hour: int
     day: str
-    temp: float
     
-    # Processed Data
+    # Internal Processing Keys
     predicted_load: float
     retrieved_rules: str
-    
-    # Final Output
     final_recommendation: str
+    critic_feedback: str
+    
+    # History/Logs (The 'operator.add' allows agents to append to this list)
+    history: Annotated[List[str], operator.add]
