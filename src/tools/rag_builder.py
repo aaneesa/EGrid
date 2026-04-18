@@ -31,7 +31,10 @@ def build_egrid_knowledge_base():
     print(f"Split policies into {len(chunks)} searchable technical chunks.")
 
     # 4. Generate Embeddings
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = HuggingFaceEmbeddings(
+        model_name="all-MiniLM-L6-v2",
+        model_kwargs={'device': 'cpu'}
+    )
 
     # 5. Create and Persist Vector Store
     vector_db = Chroma.from_documents(
