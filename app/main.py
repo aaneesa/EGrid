@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 import pandas as pd
 import streamlit as st
 
@@ -32,8 +31,27 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-    html, body, [class*="st-"] {
+    html, body, .stApp {
         font-family: 'Inter', sans-serif;
+    }
+
+    /* Keep Streamlit icon glyphs from rendering as overlapping text labels */
+    span.material-symbols-rounded,
+    span.material-symbols-outlined,
+    [data-testid="stSidebarCollapsedControl"] span,
+    [data-testid="stExpanderToggleIcon"] span {
+        font-family: "Material Symbols Rounded", "Material Symbols Outlined", sans-serif !important;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.25rem;
+        overflow: hidden;
     }
     .block-container { padding-top: 2rem; padding-bottom: 2rem; }
 
@@ -174,19 +192,9 @@ CITY_COORDS = {
 }
 
 def stream_thoughts():
-    thoughts = [
-        "🔍 Parsing grid conditions...",
-        "📡 Fetching demand model...",
-        "📊 Running ML load analysis...",
-        "⚡ Evaluating charger placement...",
-        "📉 Checking regulatory policies...",
-        "🧠 Synthesizing recommendation..."
-    ]
-    placeholder = st.empty()
-    for t in thoughts:
-        placeholder.markdown(f"**{t}**")
-        time.sleep(0.35)
-    placeholder.empty()
+    st.caption(
+        "AI pipeline: parsing grid conditions, running load analysis, checking policy constraints, and synthesizing recommendation."
+    )
 
 def parse_report_sections(report_text):
     """Split the explainability agent's report into sections by ## headers."""
@@ -321,33 +329,32 @@ def main():
         # ── Phase 1: Technical Agent ──
         st.markdown("### 🧠 Technical Agent")
 
-        with st.status("Analyzing infrastructure & protocols...", expanded=True) as status_box:
-            tech_prompt = (
-                f"Task: {task}\n"
-                f"Context: Location: {city}, Temperature: {temp}°C, Time: {hour}:00, Day: {day}\n\n"
-                f"You MUST address ALL of the following in your response:\n"
-                f"1. INFRASTRUCTURE & LOAD DIAGNOSIS — use station_load_analyst tool\n"
-                f"2. OPTIMAL CHARGER PLACEMENT & SITING — Level 2 vs Level 3, use policy_researcher tool\n"
-                f"3. SCHEDULING & OPERATIONAL INSIGHTS — peak shifting recommendations\n"
-                f"4. FINAL EXPANSION MANDATE — definitive recommendation with Protocol IDs"
+        tech_prompt = (
+            f"Task: {task}\n"
+            f"Context: Location: {city}, Temperature: {temp}°C, Time: {hour}:00, Day: {day}\n\n"
+            f"You MUST address ALL of the following in your response:\n"
+            f"1. INFRASTRUCTURE & LOAD DIAGNOSIS — use station_load_analyst tool\n"
+            f"2. OPTIMAL CHARGER PLACEMENT & SITING — Level 2 vs Level 3, use policy_researcher tool\n"
+            f"3. SCHEDULING & OPERATIONAL INSIGHTS — peak shifting recommendations\n"
+            f"4. FINAL EXPANSION MANDATE — definitive recommendation with Protocol IDs"
+        )
+
+        if run_simulation:
+            tech_prompt += (
+                f"\n\n[USER COMMAND: You MUST run a scenario simulation using the "
+                f"scenario_simulator tool with load_multiplier={load_multiplier} and "
+                f"temp_increase={temp_increase}. Analyze the 24-hour grid stability.]"
             )
 
-            if run_simulation:
-                tech_prompt += (
-                    f"\n\n[USER COMMAND: You MUST run a scenario simulation using the "
-                    f"scenario_simulator tool with load_multiplier={load_multiplier} and "
-                    f"temp_increase={temp_increase}. Analyze the 24-hour grid stability.]"
-                )
-
+        st.info("Fetching RAG policies and ML predictions...")
+        with st.spinner("Analyzing infrastructure & protocols..."):
             try:
-                st.write("Fetching RAG policies and ML predictions...")
                 tech_response = load_technical_agent().invoke({"messages": [("user", tech_prompt)]})
                 tech_output = tech_response["messages"][-1].content
-                status_box.update(state="complete")
             except Exception as e:
                 st.error(f"Critical Node Failure: {e}")
-                status_box.update(label="❌ Technical Analysis Failed", state="error")
                 return
+        st.success("Technical analysis completed.")
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -359,18 +366,17 @@ def main():
 
         st.markdown("### 📊 Investment Memo Generator")
 
-        with st.status("Generating report...", expanded=True) as status_box:
-            explain_prompt = f"Convert the following technical analysis into a structured investor-grade report:\n\n{tech_output}"
+        explain_prompt = f"Convert the following technical analysis into a structured investor-grade report:\n\n{tech_output}"
 
+        st.info("Structuring financial and risk profiles...")
+        with st.spinner("Generating report..."):
             try:
-                st.write("Structuring financial and risk profiles...")
                 explain_response = load_explainability_agent().invoke({"messages": [("user", explain_prompt)]})
                 final_report = explain_response["messages"][-1].content
-                status_box.update(state="complete")
             except Exception as e:
                 st.error(f"Reporting Pipeline Failure: {e}")
-                status_box.update(label="❌ Memo Generation Failed", state="error")
                 return
+        st.success("Investment memo generated.")
 
         # ── Tabbed Report Display ──
         st.markdown('<div class="section-header"><span class="sh-dot"></span> Investment Memorandum</div>', unsafe_allow_html=True)
@@ -386,7 +392,7 @@ def main():
                     st.markdown(sections[key])
         else:
             # Fallback: show the full report if parsing found no sections
-            with st.container(border=True):
+            with st.container():
                 st.markdown(final_report)
 
         st.markdown('<div class="green-divider"></div>', unsafe_allow_html=True)
@@ -399,7 +405,6 @@ def main():
                 data=pdf_file,
                 file_name=pdf_filename,
                 mime="application/pdf",
-                type="primary",
                 use_container_width=True
             )
 

@@ -1,8 +1,16 @@
 langgraph
 langchain-groq   
+langchain
+langchain-community
+langchain-huggingface
+langchain-chroma
 pandas
 numpy
 scikit-learn
+xgboost
+joblib
 chromadb
+sentence-transformers
+reportlab
 streamlit
 python-dotenv
