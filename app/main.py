@@ -29,10 +29,23 @@ st.set_page_config(
 # ─────────────────────────────────────────
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+        --primary: #00ffcc;
+        --primary-glow: rgba(0, 255, 204, 0.4);
+        --secondary: #7b2cbf;
+        --bg-color: #050508;
+        --card-bg: rgba(15, 15, 25, 0.6);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --text-main: #f0f0f5;
+        --text-muted: #9aa0a6;
+    }
 
     html, body, .stApp {
         font-family: 'Inter', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
     }
 
     /* Keep Streamlit icon glyphs from rendering as overlapping text labels */
@@ -57,105 +70,202 @@ st.markdown("""
 
     /* Sidebar */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0d0d14 0%, #141420 50%, #0d0d14 100%);
-        border-right: 1px solid rgba(46, 204, 113, 0.15);
+        background: rgba(10, 10, 15, 0.8) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-right: 1px solid var(--card-border);
+    }
+    section[data-testid="stSidebar"] .stMarkdown {
+        color: var(--text-main);
     }
 
-    /* Metric Cards */
-    .metric-row { display: flex; gap: 14px; margin-bottom: 20px; }
+    /* Metric Cards - Glassmorphism */
+    .metric-row { display: flex; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
     .metric-card {
         flex: 1;
-        background: linear-gradient(145deg, #1a1a2e 0%, #16162a 100%);
-        border: 1px solid rgba(46, 204, 113, 0.12);
-        border-radius: 12px;
-        padding: 18px 14px;
+        min-width: 150px;
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 24px 16px;
         text-align: center;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         position: relative;
         overflow: hidden;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
     .metric-card::before {
         content: '';
         position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #2ecc71, transparent);
-        opacity: 0.6;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+        pointer-events: none;
     }
     .metric-card:hover {
-        border-color: rgba(46, 204, 113, 0.35);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(46, 204, 113, 0.08);
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 8px 30px var(--primary-glow);
     }
-    .metric-card .mc-icon { font-size: 1.3rem; margin-bottom: 4px; }
-    .metric-card .mc-value { color: #2ecc71; font-size: 1.4rem; font-weight: 700; }
+    .metric-card .mc-icon { 
+        font-size: 1.8rem; margin-bottom: 8px; 
+        display: inline-block;
+        filter: drop-shadow(0 0 8px rgba(255,255,255,0.2));
+    }
+    .metric-card .mc-value { 
+        color: var(--text-main); font-size: 1.6rem; font-weight: 800; font-family: 'Outfit', sans-serif; 
+        text-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
     .metric-card .mc-label {
-        color: #666; font-size: 0.7rem; font-weight: 600;
-        text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+        color: var(--primary); font-size: 0.75rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 1.5px; margin-top: 6px;
     }
 
-    /* Green Divider */
+    /* Neon Divider */
     .green-divider {
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.3), transparent);
-        margin: 8px 0 20px 0; border: none;
+        background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        margin: 24px 0 32px 0; border: none;
+        opacity: 0.5;
+        box-shadow: 0 0 10px var(--primary);
     }
 
     /* Section Header */
     .section-header {
-        font-size: 1.1rem; font-weight: 700; color: #e0e0e0;
-        letter-spacing: 0.5px; margin-bottom: 14px;
-        display: flex; align-items: center; gap: 10px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.3rem; font-weight: 700; color: #fff;
+        letter-spacing: 0.5px; margin-bottom: 20px;
+        display: flex; align-items: center; gap: 12px;
     }
     .section-header .sh-dot {
-        width: 8px; height: 8px; border-radius: 50%;
-        background: #2ecc71; display: inline-block;
-        box-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--primary); display: inline-block;
+        box-shadow: 0 0 12px var(--primary);
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 var(--primary-glow); }
+        70% { box-shadow: 0 0 0 10px rgba(0, 255, 204, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0); }
     }
 
     /* Sidebar Branding */
-    .sidebar-brand { text-align: center; padding: 12px 0 6px 0; }
+    .sidebar-brand { text-align: center; padding: 20px 0 10px 0; }
+    .sidebar-brand .sb-icon { font-size: 2.5rem; filter: drop-shadow(0 0 15px var(--primary)); margin-bottom: 5px; }
     .sidebar-brand .sb-name {
-        font-size: 1.3rem; font-weight: 800; color: #2ecc71;
-        letter-spacing: 2px; text-transform: uppercase;
+        font-size: 1.8rem; font-weight: 900; color: #fff;
+        letter-spacing: 3px; text-transform: uppercase;
+        background: linear-gradient(135deg, #fff, var(--primary));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .sidebar-brand .sb-version { font-size: 0.7rem; color: #555; letter-spacing: 1px; margin-top: 2px; }
-    .sidebar-brand .sb-line { width: 40px; height: 2px; background: #2ecc71; margin: 8px auto 0 auto; border-radius: 2px; }
+    .sidebar-brand .sb-version { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; margin-top: 4px; }
 
     /* Sidebar Section Labels */
     .sidebar-section {
-        font-size: 0.72rem; font-weight: 700; color: #2ecc71;
+        font-size: 0.75rem; font-weight: 700; color: var(--primary);
         text-transform: uppercase; letter-spacing: 2px;
-        margin-top: 18px; margin-bottom: 8px;
-        padding-bottom: 5px; border-bottom: 1px solid rgba(46, 204, 113, 0.15);
+        margin-top: 24px; margin-bottom: 12px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .sidebar-section::after {
+        content: ''; flex-grow: 1; height: 1px;
+        background: linear-gradient(90deg, var(--card-border), transparent);
     }
 
     /* Welcome Card */
     .welcome-card {
-        background: linear-gradient(145deg, #1a1a2e 0%, #16162a 100%);
-        border: 1px solid rgba(46, 204, 113, 0.12);
-        border-radius: 14px; padding: 32px 28px; text-align: center; margin-top: 12px;
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--card-border);
+        border-radius: 20px; padding: 40px 30px; text-align: center; margin-top: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        animation: float 6s ease-in-out infinite;
     }
-    .welcome-card .wc-icon { font-size: 2.8rem; margin-bottom: 10px; }
-    .welcome-card .wc-title { font-size: 1.15rem; font-weight: 700; color: #e0e0e0; margin-bottom: 6px; }
-    .welcome-card .wc-text { font-size: 0.88rem; color: #777; line-height: 1.6; }
-    .welcome-card .wc-hint { font-size: 0.78rem; color: #2ecc71; margin-top: 14px; font-weight: 500; }
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    .welcome-card .wc-icon { font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
+    .welcome-card .wc-title { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 12px; letter-spacing: 1px; }
+    .welcome-card .wc-text { font-size: 0.95rem; color: var(--text-muted); line-height: 1.7; }
+    .welcome-card .wc-hint { 
+        display: inline-block;
+        padding: 6px 12px; background: rgba(0, 255, 204, 0.1); border-radius: 20px;
+        border: 1px solid rgba(0, 255, 204, 0.2);
+        font-size: 0.8rem; color: var(--primary); margin-top: 20px; font-weight: 600; 
+    }
 
     /* Button Overrides */
     .stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%) !important;
-        color: #000 !important; font-weight: 700 !important;
-        letter-spacing: 1px !important; border: none !important;
-        border-radius: 8px !important; transition: all 0.3s ease !important;
+        background: rgba(0, 255, 204, 0.05) !important;
+        color: var(--primary) !important;
+        font-weight: 800 !important; font-family: 'Outfit', sans-serif !important;
+        letter-spacing: 2px !important;
+        border: 1px solid var(--primary) !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease !important;
+        text-transform: uppercase;
+        box-shadow: 0 0 15px rgba(0, 255, 204, 0.1), inset 0 0 10px rgba(0, 255, 204, 0.05) !important;
+        min-height: 54px !important;
+    }
+    .stButton > button[kind="primary"] p {
+        color: inherit !important;
     }
     .stButton > button[kind="primary"]:hover {
-        box-shadow: 0 4px 20px rgba(46, 204, 113, 0.3) !important;
-        transform: translateY(-1px) !important;
+        background: var(--primary) !important;
+        color: #050508 !important;
+        box-shadow: 0 0 25px rgba(0, 255, 204, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.5) !important;
+        transform: translateY(-2px) !important;
     }
     .stDownloadButton > button {
-        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%) !important;
-        color: #000 !important; font-weight: 700 !important;
-        border: none !important; border-radius: 8px !important;
+        background: rgba(0, 255, 204, 0.05) !important;
+        color: var(--primary) !important;
+        font-weight: 700 !important; font-family: 'Outfit', sans-serif !important;
+        border: 1px solid var(--primary) !important;
+        border-radius: 8px !important;
+        text-transform: uppercase; letter-spacing: 1.5px !important;
+        transition: all 0.3s ease !important;
+        min-height: 50px !important;
+    }
+    .stDownloadButton > button p {
+        color: inherit !important;
+    }
+    .stDownloadButton > button:hover {
+        background: var(--primary) !important;
+        color: #050508 !important;
+        box-shadow: 0 0 20px rgba(0, 255, 204, 0.4) !important;
+    }
+    
+    /* Inputs Styling */
+    .stTextInput > div > div > input, .stTextArea > div > div > textarea, .stSelectbox > div > div > div {
+        background-color: rgba(0,0,0,0.2) !important;
+        border: 1px solid var(--card-border) !important;
+        border-radius: 8px !important;
+        color: #fff !important;
+    }
+    .stTextInput > div > div > input:focus, .stTextArea > div > div > textarea:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 1px var(--primary) !important;
+    }
+    
+    /* Expander Styling */
+    .streamlit-expanderHeader {
+        background-color: var(--card-bg) !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--card-border) !important;
+        font-weight: 600 !important;
+        color: #fff !important;
+    }
+    
+    /* Status Box */
+    [data-testid="stStatusWidget"] {
+        background-color: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
+        border-radius: 12px !important;
     }
 
     /* Hide Streamlit chrome */
@@ -226,10 +336,9 @@ def main():
     with st.sidebar:
         st.markdown("""
             <div class="sidebar-brand">
-                <div style="font-size: 2rem;">⚡</div>
+                <div class="sb-icon">⚡</div>
                 <div class="sb-name">EGrid</div>
-                <div class="sb-version">AI Supervisor · v2.0</div>
-                <div class="sb-line"></div>
+                <div class="sb-version">AI Supervisor · v3.0</div>
             </div>
         """, unsafe_allow_html=True)
 
@@ -267,28 +376,32 @@ def main():
 
     # ───── HEADER ─────
     st.markdown("""
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:2px;">
-            <span style="font-size:2.2rem;">⚡</span>
-            <span style="font-size:1.8rem; font-weight:800; letter-spacing:1.5px;
-                background: linear-gradient(135deg, #2ecc71, #27ae60, #1abc9c);
-                -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-                text-transform: uppercase;">EGrid Supervisor</span>
-        </div>
-        <div style="color:#666; font-size:0.9rem; margin-bottom:20px;">
-            Autonomous EV Infrastructure & Grid Stability Intelligence
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+            <div style="font-size:2.8rem; filter: drop-shadow(0 0 10px rgba(0,255,204,0.5));">⚡</div>
+            <div>
+                <div style="font-size:2.4rem; font-weight:900; font-family:'Outfit', sans-serif; letter-spacing:2px;
+                    background: linear-gradient(135deg, #ffffff, var(--primary));
+                    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                    text-transform: uppercase; line-height: 1.2;">EGrid Supervisor</div>
+                <div style="color:var(--text-muted); font-size:1rem; font-weight:500;">
+                    Autonomous EV Infrastructure & Grid Stability Intelligence
+                </div>
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
     # ───── METRIC CARDS ─────
-    sim_status = "⚠️ STRESS TEST" if run_simulation else "● STABLE"
-    sim_color = "#ff9900" if run_simulation else "#2ecc71"
+    sim_status = "STRESS TEST" if run_simulation else "SYSTEM STABLE"
+    sim_color = "#ff3366" if run_simulation else "var(--primary)"
+    sim_icon = "⚠️" if run_simulation else "🟢"
+    card_border_style = f"border-color: {sim_color}; box-shadow: inset 0 0 20px rgba(255, 51, 102, 0.1);" if run_simulation else ""
 
     st.markdown(f"""
         <div class="metric-row">
             <div class="metric-card">
                 <div class="mc-icon">📍</div>
                 <div class="mc-value">{city}</div>
-                <div class="mc-label">Active Substation</div>
+                <div class="mc-label">Active Node</div>
             </div>
             <div class="metric-card">
                 <div class="mc-icon">🌡️</div>
@@ -300,10 +413,10 @@ def main():
                 <div class="mc-value">{hour:02d}:00</div>
                 <div class="mc-label">Grid Time</div>
             </div>
-            <div class="metric-card">
-                <div class="mc-icon">📊</div>
-                <div class="mc-value" style="color:{sim_color}; font-size:1rem;">{sim_status}</div>
-                <div class="mc-label">Node Status</div>
+            <div class="metric-card" style="{card_border_style}">
+                <div class="mc-icon">{sim_icon}</div>
+                <div class="mc-value" style="color:{sim_color}; font-size:1.2rem;">{sim_status}</div>
+                <div class="mc-label">System State</div>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -415,13 +528,13 @@ def main():
     else:
         st.markdown("""
             <div class="welcome-card">
-                <div class="wc-icon">🔋</div>
-                <div class="wc-title">Ready to Analyze</div>
+                <div class="wc-icon">🌐</div>
+                <div class="wc-title">System Standby</div>
                 <div class="wc-text">
-                    Configure your grid parameters and describe your infrastructure task in the
-                    sidebar, then click <strong>INITIATE ANALYSIS</strong> to deploy the AI Supervisor.
+                    Configure telemetry parameters and specify your infrastructure objective in the
+                    control panel. Initialize analysis to deploy the AI Supervisor network.
                 </div>
-                <div class="wc-hint">⚡ Powered by LangGraph + XGBoost + RAG</div>
+                <div class="wc-hint">✨ Powered by LangGraph • XGBoost • RAG</div>
             </div>
         """, unsafe_allow_html=True)
 
